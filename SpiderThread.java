@@ -10,34 +10,21 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import java.sql.PreparedStatement;
-//import java.sql.ResultSet;
-import java.sql.SQLException;
-//import java.sql.Statement;
 
-public class webCrawler extends Thread {
+public class SpiderThread extends Thread {
 	private static HashSet<String> visitedPages=new HashSet<String>();
 	private static LinkedList<String> pagesToVisit= new LinkedList<String>();
 	private static final int maxNumberOfPages = 100;
 	private String URL;
-	private static int maxNumberOfThreads;
-	Database Db=new Database();
+	//private String nextUrl;
 	
-	//private String nextUrl;	
 	
-	//Constructors
-	public webCrawler(String startingURL) 
-	{
-		this.URL = startingURL;
-	}
 	
-	public webCrawler(String startingURL , int maxNumberOfThreads) 
-	{
-		this.URL = startingURL;
-		webCrawler.maxNumberOfThreads = maxNumberOfThreads;
+	public SpiderThread(String startingURL) {
+		URL=startingURL;
 	}
 
-
+	
 
 	//Crawl
 	public String crawl(String URL) throws IOException
@@ -90,107 +77,63 @@ public class webCrawler extends Thread {
 								if(addLink)
 									pagesToVisit.add(link.absUrl("href"));
 							}
-							
-							if(!visitedPages.contains(URL) && visitedPages.size() < maxNumberOfPages)
-							{
-								visitedPages.add(URL);
-								try {
-									insertUrl(URL);
-								} catch (SQLException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								System.out.println(Thread.currentThread().getName() + " : " + URL);
-							}
-							
-						}
-					}
-					else
-					{
-						for(Element link:links)
-						{
-							pagesToVisit.add(link.absUrl("href"));
-						}
 
-						visitedPages.add(URL);
-						try {
-							insertUrl(URL);
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							visitedPages.add(URL);
+							System.out.println(URL);
 						}
-						System.out.println(Thread.currentThread().getName() + " : " + URL);
 					}
 				}
 			}
 		}
 
 		//The crawler must not visit the same URL more than once
-		nextUrl = getNextUrlToVisit();
+		do{
+			if(pagesToVisit.isEmpty())
+				break;
+		nextUrl = pagesToVisit.removeFirst();
+		}while(nextUrl == "" || visitedPages.contains(nextUrl));
 		return nextUrl;
 	}
 
 	//Overriding run method in thread
-	public void run() 
-	{	
-		String startingUrl = URL;
+	public void run() {
+		
+		String startingUrl=URL;
 		do{
 			
 			try {
-				startingUrl = crawl(startingUrl);
+				startingUrl=crawl(startingUrl);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			//System.out.println(startingURL);
-		}while(startingUrl != "" && visitedPages.size() < maxNumberOfPages);	
+		}while(visitedPages.size() < maxNumberOfPages);
+		
 	}
 	
 	//get Maximum number of pages
 	public int getmaxNumberOfPages()
 	{
-		return maxNumberOfPages;
+				return maxNumberOfPages;
 	}
-	
+
 	//Returning size of visited pages
 	public int getSizeOfVisitedPages()
 	{
-		return visitedPages.size();
+				return visitedPages.size();
 	}
-	
-	//get Maximum number of threads
-	public int getmaxNumberOfThreads()
+
+	//Print visited pages
+	public void PrintVisitedPages()
 	{
-		return maxNumberOfThreads;
+				for(String Link : visitedPages)
+				{
+					System.out.println(Link);
+				}
 	}
-		
-	public synchronized String getNextUrlToVisit()  //Nefakar static wala la2
-	{
-		String nextUrl = "";
-		do{
-			if(pagesToVisit.isEmpty())
-				break;
-		nextUrl = pagesToVisit.removeFirst();
-		}while(nextUrl == "" || visitedPages.contains(nextUrl));
-		
-		return nextUrl;	
-	}		
-	
-	//SQL Insert
-	public void insertUrl(String Url) throws SQLException
-	{
-		String query = " insert into visitedpages (Url)"  + " values (?)";
-		try
-		{
-		PreparedStatement sqlStatement= Db.conn.prepareStatement(query);
-		sqlStatement.setString (1, Url);
-		sqlStatement.execute();
-		}
-		catch(SQLException s)
-		{
-			return;
-		}
-	}
+					
 	
 }
+

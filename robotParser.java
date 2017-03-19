@@ -16,7 +16,7 @@ public class robotParser {
 		
 		String host = URL.getHost();
 		// form URL of the robots.txt file
-	    String robotUrl = "https://" + host + "/robots.txt";
+	    String robotUrl = "http://" + host + "/robots.txt";
 	    
 	    URL robotUrlObj = new URL(robotUrl);
 	    HttpURLConnection connection = (HttpURLConnection)  robotUrlObj.openConnection();
@@ -24,7 +24,7 @@ public class robotParser {
 			connection.connect();
 		}catch(IOException e)
 		{
-			return;
+			e.printStackTrace();
 		}
 		
 		//validation
@@ -32,7 +32,7 @@ public class robotParser {
 		
 		int indexOf = 0;
 		
-	   if(contentType == null || contentType.contains("text/plain"))
+	    if(contentType == null || contentType.contains("text/plain"))
 	    {
 	    	Scanner scan = null;
 	    	try{
@@ -71,8 +71,6 @@ public class robotParser {
 	    			else lineString = "";
 	    		}
 	    	}    
-	    	scan.close();
 	    }
-	   
 	}
 }
