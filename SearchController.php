@@ -57,7 +57,7 @@ class SearchController extends Controller
             $query =  DB::table('visitedpages')
                             ->join('indexer', function ($join){
                                 $join->on('visitedpages.ID', '=', 'indexer.UrlID')
-                                    -> where ('document', 'LIKE','%'.$this->keyword[1].'%');})
+                                    -> where ('document', 'LIKE','%'." ".$this->keyword[1]." ".'%');})
                    ->select( DB::raw(" Url,Title  from (SELECT  
                    sum(rank) as rankTotal,urlID 
                    FROM searchengine.indexer"));
