@@ -123,7 +123,9 @@
                                                         //if the length of the string after the word is too big
                                                         if($len >= 400)
                                                         {
-                                                            $posFinal = strpos($stringAfterWord , ' ', 1);
+                                                            $posFinal = strpos($stringAfterWord , ' ', 30);
+                                                            if($posFinal == false)
+                                                                $posFinal = strpos($stringAfterWord , ' ', 1);
                                                             $len = $posFinal;
                                                         } 
                                                         $stringDisplayedAfterWord = substr ($visitedpage->Document , $posWord + strlen($searchWord) , $len);
@@ -285,49 +287,56 @@
                                                     {
                                                         if($visitedpage->Document != "")
                                                         {
+                                                            $stringDisplayedAfterWord = $stringDisplayedBeforeWord ="";
                                                             $phrase = substr($word, 1, strlen($word) - 2);
                                                             $posPhrase = strpos($visitedpage->Document, $phrase." ");
                                                             if($posPhrase == false)
                                                                 $posPhrase = strpos($visitedpage->Document, $phrase);
-                                                            
-                                                            //String before the word
-                                                            //get the beginning of the phrase
-                                                            $lenBeforeWord = 0;
-                                                            $pos = $posPhrase;
-                                                            if($pos > 0)
+                                                            if($posPhrase)
                                                             {
-                                                                $stringBeforeWord = substr ($visitedpage->Document , 0, $posPhrase);
-                                                                //get the position of the beginning of the phrase
-                                                                $pos = strrpos($stringBeforeWord , '.', -1);
-                                                                if($pos == false)
-                                                                    $pos = strrpos($stringBeforeWord , ' ', -1);
-                                                                else $pos = $pos + 1;
-                                                                $lenBeforeWord = $posPhrase - $pos;
-                                                                //if the string before the word bolded is too big
-                                                                if($lenBeforeWord >= 200)
+                                                                //String before the word
+                                                                //get the beginning of the phrase
+                                                                $lenBeforeWord = 0;
+                                                                $pos = $posPhrase;
+                                                                if($pos > 0)
                                                                 {
-                                                                    $pos = strrpos($stringBeforeWord , ' ', -40);
-                                                                     $lenBeforeWord = $posPhrase - $pos;
-                                                                }     
-                                                            }
-                                                            $stringDisplayedBeforeWord = substr ($visitedpage->Document , $pos, $lenBeforeWord);
-                                                            
-                                                            //String after word
-                                                            //determine length of discription displayed and string displayed 
-                                                            $len = strlen($visitedpage->Document);
-                                                            $stringAfterWord = substr ($visitedpage->Document, $posPhrase + strlen($phrase) , $len);
-                                                            $endOfDescription = strpos($stringAfterWord, '.');
+                                                                    $stringBeforeWord = substr ($visitedpage->Document , 0, $posPhrase);
+                                                                    //get the position of the beginning of the phrase
+                                                                    $pos = strrpos($stringBeforeWord , '.', -1);
+                                                                    if($pos == false)
+                                                                        $pos = strrpos($stringBeforeWord , ' ', -1);
+                                                                    else $pos = $pos + 1;
+                                                                    $lenBeforeWord = $posPhrase - $pos;
+                                                                    //if the string before the word bolded is too big
+                                                                    if($lenBeforeWord >= 200)
+                                                                    {
+                                                                        $pos = strrpos($stringBeforeWord , ' ', -40);
+                                                                         $lenBeforeWord = $posPhrase - $pos;
+                                                                    }
+                                                                }
 
-                                                            if($len >= 200 && $endOfDescription)
-                                                                $len = $endOfDescription;
-                                                            else $len = 200;
-                                                            //if the length of the string after the word is too big
-                                                            if($len >= 400)
-                                                            {
-                                                                $posFinal = strpos($stringAfterWord , ' ', 1);
-                                                                $len = $posFinal;
-                                                            } 
-                                                            $stringDisplayedAfterWord = substr ($visitedpage->Document , $posPhrase + strlen($phrase) , $len);
+                                                                $stringDisplayedBeforeWord = substr ($visitedpage->Document , $pos, $lenBeforeWord);
+
+                                                                //String after word
+                                                                //determine length of discription displayed and string displayed 
+                                                                $len = strlen($visitedpage->Document);
+                                                                $stringAfterWord = substr ($visitedpage->Document, $posPhrase + strlen($phrase) , $len);
+                                                                $endOfDescription = strpos($stringAfterWord, '.');
+
+                                                                if($len >= 200 && $endOfDescription)
+                                                                    $len = $endOfDescription;
+                                                                else $len = 200;
+                                                                //if the length of the string after the word is too big
+                                                                if($len >= 400)
+                                                                {
+                                                                    $posFinal = strpos($stringAfterWord , ' ', 30);
+                                                                    if($posFinal == false)
+                                                                        $posFinal = strpos($stringAfterWord , ' ', 1);
+                                                                    $len = $posFinal;
+                                                                } 
+                                                                $stringDisplayedAfterWord = substr ($visitedpage->Document , $posPhrase + strlen($phrase) , $len);
+                                                            }
+                                                            
 
                                                     ?>
                                                     <span class="st">{{ $stringDisplayedBeforeWord }}<b>{{$phrase}}</b>{{$stringDisplayedAfterWord}}...</span>
